@@ -10,7 +10,7 @@ def uniform_char_func(n,L,S,phi):
     S:              integer > 0 (upper value for infinite product estimation)
     phi:            real number [0,1)     
 
-    returns:        approximation of infinite product of sinc(n phi^s/L) wrt s     
+    returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
     '''
     return np.prod([np.sinc((phi**s)*n/L) for s in range(S)])
 
@@ -25,6 +25,21 @@ def partial_alternating_sum(k,L,S,phi,f):
     phi:            real number: [0,1)
     f:              characteristic function
 
-    returns:        approximation of the alternating series for n = 1,...,k+1
+    returns:        real number (approximation of the alternating series for n = 1,...,k+1)
     '''
     return np.sum([(-1)**(n-1) *f(n,L,S,phi) for n in range(1,k+1)])
+
+def remainder(k,L,S,phi,f):
+    '''
+    description:    finds the difference between the kth and (k-1)th partial sums
+
+    params:
+    k:              integer > 0 (number of terms included in the series)
+    L:              real number > 0
+    S:              integer > 0 (upper value for infinite product estimation)
+    phi:            real number: [0,1)
+    f:              characteristic function
+
+    returns:        real number (see description)
+    '''
+    return partial_alternating_sum(k,L,S,phi,f)-partial_alternating_sum(k-1,L,S,phi,f)
