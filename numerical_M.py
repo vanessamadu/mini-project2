@@ -16,7 +16,7 @@ def uniform_char_func(n,L,S,phi):
 
 def partial_alternating_sum(k,L,S,phi,f):
     '''
-    description:    finite approximation of the alternating series sum(char_func(n))
+    description:    finite approximation of the alternating series sum((-1)^{n-1}char_func(n))
 
     params:
     k:              integer > 0 (number of terms included in the series)
@@ -34,7 +34,7 @@ def remainder(k,L,S,phi,f):
     description:    finds the difference between the kth and (k-1)th partial sums
 
     params:
-    k:              integer > 0 (number of terms included in the series)
+    k:              integer > 1 (number of terms included in the series)
     L:              real number > 0
     S:              integer > 0 (upper value for infinite product estimation)
     phi:            real number: [0,1)
@@ -43,3 +43,33 @@ def remainder(k,L,S,phi,f):
     returns:        real number (see description)
     '''
     return partial_alternating_sum(k,L,S,phi,f)-partial_alternating_sum(k-1,L,S,phi,f)
+
+def geom_L(phi):
+    '''
+    infinite sum of geometric series. 
+    phi: real number: [0,1)
+    '''
+    return 1/(1-np.abs(phi))
+
+def approx_alternating_series(phi,S,tol,p,f,L):
+    '''
+    description:    approximates the alternating series sum((-1)^{n-1}char_func(n))
+
+    S:              integer > 0 (upper value for infinite product estimation)
+    tol:            real number (tolerance for convergence)
+    phi:            real number: [0,1)
+    p:              integer > 1 (required number of consecutive remainders less than tol)
+    f:              characteristic function
+    L:              function (defining L)
+
+    returns:        the value of k that exited the while loop, remainders, partial sum for k value
+    '''
+    k = 1
+    remainders = []
+
+    for k in range(1,p):
+        remainders.append(remainder(k,L(phi),S,phi,f))
+    while (np.abs(remainders[::-1][:p]) > tol).any():
+        remainders.append(remainder(k,L(phi),S,phi,f))
+        k +=1
+    return k, remainders, partial_alternating_sum(k,L,S,phi,f)
