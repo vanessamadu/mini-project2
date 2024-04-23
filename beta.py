@@ -1,14 +1,15 @@
 from numerical_M import *
 import matplotlib.pyplot as plt
 
-phi = 0.1
-S = 200
-tol = 10E-6
-p = 20
-alpha = 0.5
+phi = 0.5
+S = 200 
+tol = 10E-4
+p = 20 
+alpha = 0.25
 
 params = [geom_L(phi),S,phi,alpha]
 
 vals = approx_alternating_series(params,tol,p,beta_char_func)
-plt.plot(vals[2])
+print(np.real(vals[3]))
+plt.plot([np.real(x) for x in vals[2]])
 plt.show()
