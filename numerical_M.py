@@ -39,7 +39,7 @@ def partial_alternating_sum(k,params,f):
     returns:        real number (approximation of the alternating series for n = 1,...,k+1)
     '''
 
-    return np.sum([(-1)**(n-1) *f(k,params) for n in range(1,k+1)])
+    return np.sum([(-1)**(n-1) *f(n,params) for n in range(1,k+1)])
 
 def remainder(k,params,f):
     '''
@@ -84,7 +84,6 @@ def approx_alternating_series(params,tol,p,f):
         remainders.append(remainder(k,params,f))
         partial_sums.append(partial_alternating_sum(k,params,f))
     while (np.abs(np.real(remainders[::-1][:p])) > tol).any():
-        print(remainders)
         remainders.append(remainder(k,params,f))
         partial_sums.append(partial_alternating_sum(k,params,f))
         k +=1
