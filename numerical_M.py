@@ -83,7 +83,8 @@ def approx_alternating_series(params,tol,p,f):
     for k in range(1,p):
         remainders.append(remainder(k,params,f))
         partial_sums.append(partial_alternating_sum(k,params,f))
-    while (np.abs(remainders[::-1][:p]) > tol).any():
+    while (np.abs(np.real(remainders[::-1][:p])) > tol).any():
+        print(remainders)
         remainders.append(remainder(k,params,f))
         partial_sums.append(partial_alternating_sum(k,params,f))
         k +=1
