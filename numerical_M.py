@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.special import gamma,iv
 
-def uniform_char_func(n,L,S,phi):
+def uniform_char_func(n,params):
     '''
     description:    finite approximation of the characteristic function of an infinite geometrically weighted
                     sum of uniformly distributed random variables on the interval [-1,1].
@@ -13,9 +13,11 @@ def uniform_char_func(n,L,S,phi):
 
     returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
     '''
+    L,S,phi = params
     return np.prod([np.sinc((phi**s)*n/L) for s in range(S)])
 
-def beta_char_func(n,L,S,phi,alpha):
+def beta_char_func(n,params):
+    L,S,phi,alpha = params
     const = beta_normalising_constant(alpha)*np.sqrt(np.pi)*gamma(alpha)
     t = n*np.pi/L
     return np.prod([const*iv(alpha-0.5,np.j*t*(phi**s)/2)*(np.j*t*(phi**s))**(0.5-alpha) for s in range(S)])
