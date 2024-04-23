@@ -38,7 +38,8 @@ def partial_alternating_sum(k,params,f):
 
     returns:        real number (approximation of the alternating series for n = 1,...,k+1)
     '''
-    return np.sum([(-1)**(n-1) *f(n,params) for n in range(1,k+1)])
+
+    return np.sum([(-1)**(n-1) *f(k,params) for n in range(1,k+1)])
 
 def remainder(k,params,f):
     '''
@@ -62,7 +63,7 @@ def geom_L(phi):
     '''
     return 1/(1-np.abs(phi))
 
-def approx_alternating_series(tol,p,f,params):
+def approx_alternating_series(params,tol,p,f):
     '''
     description:    approximates the alternating series sum((-1)^{n-1}char_func(n))
 
@@ -80,7 +81,7 @@ def approx_alternating_series(tol,p,f,params):
     partial_sums = []
 
     for k in range(1,p):
-        remainders.append(remainder(k,params))
+        remainders.append(remainder(k,params,f))
         partial_sums.append(partial_alternating_sum(k,params,f))
     while (np.abs(remainders[::-1][:p]) > tol).any():
         remainders.append(remainder(k,params,f))
