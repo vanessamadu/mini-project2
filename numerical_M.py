@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.special import gamma
+from scipy.special import gamma,iv
 
 def uniform_char_func(n,L,S,phi):
     '''
@@ -16,7 +16,9 @@ def uniform_char_func(n,L,S,phi):
     return np.prod([np.sinc((phi**s)*n/L) for s in range(S)])
 
 def beta_char_func(n,L,S,phi,alpha):
-    pass
+    const = beta_normalising_constant(alpha)*np.sqrt(np.pi)*gamma(alpha)
+    t = n*np.pi/L
+    return np.prod([const*iv(alpha-0.5,np.j*t*(phi**s)/2)*(np.j*t*(phi**s))**(0.5-alpha) for s in range(S)])
 
 def beta_normalising_constant(alpha):
     return gamma(2*alpha)/gamma(alpha)**2
