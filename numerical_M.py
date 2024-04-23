@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.special import gamma
 
 def uniform_char_func(n,L,S,phi):
     '''
@@ -13,6 +14,12 @@ def uniform_char_func(n,L,S,phi):
     returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
     '''
     return np.prod([np.sinc((phi**s)*n/L) for s in range(S)])
+
+def beta_char_func(n,L,S,phi,alpha):
+    pass
+
+def beta_normalising_constant(alpha):
+    return gamma(2*alpha)/gamma(alpha)**2
 
 def partial_alternating_sum(k,L,S,phi,f):
     '''
