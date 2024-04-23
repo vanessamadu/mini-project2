@@ -66,10 +66,13 @@ def approx_alternating_series(phi,S,tol,p,f,L):
     '''
     k = 1
     remainders = []
+    partial_sums = []
 
     for k in range(1,p):
         remainders.append(remainder(k,L(phi),S,phi,f))
+        partial_sums.append(partial_alternating_sum(k,L(phi),S,phi,f))
     while (np.abs(remainders[::-1][:p]) > tol).any():
         remainders.append(remainder(k,L(phi),S,phi,f))
+        partial_sums.append(partial_alternating_sum(k,L(phi),S,phi,f))
         k +=1
-    return k, remainders, partial_alternating_sum(k,L,S,phi,f)
+    return k, remainders, partial_sums, partial_alternating_sum(k,L(phi),S,phi,f)
