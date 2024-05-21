@@ -95,4 +95,4 @@ def approx_alternating_series(params,tol,p,f):
 
 def M(params,tol,p,f):
     val = approx_alternating_series(params,tol,p,f)[3]
-    return f'{round(approx_alternating_series(params,tol,p,f)[3],2)*2}*π', np.pi*val/2
+    return f'{round(approx_alternating_series(params,tol,p,f)[3],2)*2}*π', np.pi/(2*val)
