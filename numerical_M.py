@@ -28,21 +28,19 @@ def beta_char_func(t,params):
     const = gamma(alpha+0.5)
     return np.prod([const*iv(alpha-0.5,1j*t/2)*(1j*t/4)**(0.5-alpha) for s in range(S)])
 
-def partial_alternating_sum(k,params,f):
+def partial_alternating_sum(k,t,params,f):
     '''
     description:    finite approximation of the alternating series sum((-1)^{n-1}char_func(n))
 
     params:
     k:              integer > 0 (number of terms included in the series)
-    L:              real number > 0
-    S:              integer > 0 (upper value for infinite product estimation)
-    phi:            real number: [0,1)
+    t:              real number > 0
     f:              characteristic function
 
     returns:        real number (approximation of the alternating series for n = 1,...,k+1)
     '''
 
-    return np.sum([(-1)**(n-1) *f(n,params) for n in range(1,k+1)])
+    return np.sum([(-1)**(n-1) *f(t,params) for n in range(1,k+1)])
 
 def remainder(k,params,f):
     '''
