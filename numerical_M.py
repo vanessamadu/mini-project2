@@ -3,7 +3,7 @@ from scipy.special import gamma,iv
 
 def uniform_char_func(t,params):
     '''
-    description:    finite approximation of the characteristic function of an infinite geometrically weighted
+    description:    finite approximation of the characteristic function of an infinite 
                     sum of uniformly distributed random variables on the interval [-B,B].
     params:     
     B:              real number > 0
@@ -14,11 +14,19 @@ def uniform_char_func(t,params):
     B,S = params
     return np.prod([np.sinc(B*t) for s in range(S)])
 
-def beta_char_func(n,params):
-    L,S,phi,alpha = params
+def beta_char_func(t,params):
+    '''
+    description:    finite approximation of the characteristic function of an infinite
+                    sum of symmetric beta distributed random variables on the interval [-1/2,1/2].
+    params:     
+    alpha:              real number > 0
+    S:              integer > 0 (upper value for infinite product estimation)
+
+    returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
+    '''
+    S,alpha = params
     const = gamma(alpha+0.5)
-    t = n*np.pi/L
-    return np.prod([const*iv(alpha-0.5,1j*t*(phi**s)/2)*(1j*t*(phi**s))**(0.5-alpha) for s in range(S)])
+    return np.prod([const*iv(alpha-0.5,1j*t/2)*(1j*t/4)**(0.5-alpha) for s in range(S)])
 
 def partial_alternating_sum(k,params,f):
     '''
