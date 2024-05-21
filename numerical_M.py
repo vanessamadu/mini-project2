@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.special import gamma,iv
 
-def uniform_char_func(t,params):
+def uniform_char_func(t,params,coeff,coeff_param):
     '''
     description:    finite approximation of the characteristic function of an infinite 
                     sum of uniformly distributed random variables on the interval [-B,B].
@@ -9,12 +9,13 @@ def uniform_char_func(t,params):
     B:              real number > 0
     S:              integer > 0 (upper value for infinite product estimation)
     t:              real number = pi/L > 0
+    coeff:          function (defining coefficients c_s)
     returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
     '''
     B,S = params
-    return np.prod([np.sinc(B*t) for s in range(S)])
+    return np.prod([np.sinc(coeff(coeff_param,s)*B*t) for s in range(S)])
 
-def beta_char_func(t,params):
+def beta_char_func(t,params,coeff,coeff_param):
     '''
     description:    finite approximation of the characteristic function of an infinite
                     sum of symmetric beta distributed random variables on the interval [-1/2,1/2].
@@ -22,11 +23,12 @@ def beta_char_func(t,params):
     alpha:          real number > 0
     S:              integer > 0 (upper value for infinite product estimation)
     t:              real number = pi/L > 0
+    coeff:          function (defining coefficients c_s)
     returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
     '''
     alpha, S = params
     const = gamma(alpha+0.5)
-    return np.prod([const*iv(alpha-0.5,1j*t/2)*(1j*t/4)**(0.5-alpha) for s in range(S)])
+    return np.prod([const*iv(alpha-0.5,1j*coeff(coeff_param,s)*t/2)*(1j*coeff(coeff_param,s)*t/4)**(0.5-alpha) for s in range(S)])
 
 def partial_alternating_sum(k,t,params,f):
     '''
@@ -63,7 +65,7 @@ def geom_L(phi):
     return 1/(1-np.abs(phi))
 
 def geom_coeff(phi,s):
-    return phi^s
+    return phi**s
 
 def approx_alternating_series(params,tol,p,f,L):
     '''
