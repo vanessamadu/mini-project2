@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.special import gamma,iv
 
-def uniform_char_func(t,params,coeff,coeff_param):
+def uniform_char_func(t,params):
     '''
     description:    finite approximation of the characteristic function of an infinite 
                     sum of uniformly distributed random variables on the interval [-B,B].
@@ -12,10 +12,10 @@ def uniform_char_func(t,params,coeff,coeff_param):
     coeff:          function (defining coefficients c_s)
     returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
     '''
-    B,S = params
+    B,S,coeff,coeff_param = params
     return np.prod([np.sinc(coeff(coeff_param,s)*B*t) for s in range(S)])
 
-def beta_char_func(t,params,coeff,coeff_param):
+def beta_char_func(t,params):
     '''
     description:    finite approximation of the characteristic function of an infinite
                     sum of symmetric beta distributed random variables on the interval [-1/2,1/2].
@@ -26,7 +26,7 @@ def beta_char_func(t,params,coeff,coeff_param):
     coeff:          function (defining coefficients c_s)
     returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
     '''
-    alpha, S = params
+    alpha, S, coeff,coeff_param = params
     const = gamma(alpha+0.5)
     return np.prod([const*iv(alpha-0.5,1j*coeff(coeff_param,s)*t/2)*(1j*coeff(coeff_param,s)*t/4)**(0.5-alpha) for s in range(S)])
 
