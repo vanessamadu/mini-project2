@@ -24,7 +24,7 @@ def beta_char_func(t,params):
     t:              real number = pi/L > 0
     returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
     '''
-    S,alpha = params
+    alpha, S = params
     const = gamma(alpha+0.5)
     return np.prod([const*iv(alpha-0.5,1j*t/2)*(1j*t/4)**(0.5-alpha) for s in range(S)])
 
