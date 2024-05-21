@@ -62,6 +62,9 @@ def geom_L(phi):
     '''
     return 1/(1-np.abs(phi))
 
+def geom_coeff(phi,s):
+    return phi^s
+
 def approx_alternating_series(params,tol,p,f,L):
     '''
     description:    approximates the alternating series sum((-1)^{n-1}char_func(n))
