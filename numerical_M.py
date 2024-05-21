@@ -94,4 +94,5 @@ def approx_alternating_series(params,tol,p,f):
     return k, remainders, partial_sums, partial_alternating_sum(k,params,f)
 
 def M(params,tol,p,f):
-    return f'{round(approx_alternating_series(params,tol,p,f)[3],2)*2}*π'
+    val = approx_alternating_series(params,tol,p,f)[3]
+    return f'{round(approx_alternating_series(params,tol,p,f)[3],2)*2}*π', np.pi*val/2
