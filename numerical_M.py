@@ -42,20 +42,18 @@ def partial_alternating_sum(k,t,params,f):
 
     return np.sum([(-1)**(n-1) *f(t,params) for n in range(1,k+1)])
 
-def remainder(k,params,f):
+def remainder(k,t,params,f):
     '''
     description:    finds the difference between the kth and (k-1)th partial sums
 
     params:
-    k:              integer > 1 (number of terms included in the series)
-    L:              real number > 0
-    S:              integer > 0 (upper value for infinite product estimation)
-    phi:            real number: [0,1)
+    k:              integer > 0 (number of terms included in the series)
+    t:              real number > 0
     f:              characteristic function
 
     returns:        real number (see description)
     '''
-    return partial_alternating_sum(k,params,f)-partial_alternating_sum(k-1,params,f)
+    return partial_alternating_sum(k,t,params,f)-partial_alternating_sum(k-1,t,params,f)
 
 def geom_L(phi):
     '''
