@@ -3,18 +3,21 @@ import matplotlib.pyplot as plt
 
 ''' B,S = params'''
 
-# Specifying L
-phi = 0.5
-L = geom_L(phi)
+
 # params
 B = 1
-S = 100 
-params = [B,S]
+# Specifying L
+phi = 0.5
+L = geom_L(phi,B)
+S = 200 
+coeff = geom_coeff
+coeff_param = phi
+params = [B,S,coeff,coeff_param,L]
 # estimator parameters
 tol = 10E-6
-p = 20
+p = 10
 
 vals = approx_alternating_series(params,tol,p,uniform_char_func)
-print(vals[3])
-plt.plot(vals[2])
-plt.show()
+print(vals[2])
+#plt.plot(vals[2])
+#plt.show()
