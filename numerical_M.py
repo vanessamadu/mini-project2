@@ -26,9 +26,9 @@ def beta_char_func(n,params):
     coeff:          function (defining coefficients c_s)
     returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
     '''
-    alpha, S, coeff,coeff_param,L = params
-    const = gamma(alpha+0.5)
-    return np.prod([const*iv(alpha-0.5,1j*coeff(coeff_param,s)*n*np.pi/L/2)*(1j*coeff(coeff_param,s)*n*np.pi/L/4)**(0.5-alpha) for s in range(S)])
+    B,alpha, S, coeff,coeff_param,L = params
+    const = (2*B)**(2*alpha-1)*gamma(alpha+0.5)
+    return np.prod([const*iv(alpha-0.5,1j*coeff(coeff_param,s)*B*n*np.pi/L)*(1j*coeff(coeff_param,s)*n*B*np.pi/L/2)**(0.5-alpha) for s in range(S)])
 
 def partial_alternating_sum(k,params,f):
     '''
