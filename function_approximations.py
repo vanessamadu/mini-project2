@@ -81,7 +81,6 @@ def partial_sum_remainder(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k):
                                                                              c_s_params,cf_params,cf,k-1)
 
 def approx_alternating_series(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p):
-
     k = 1
     remainders = []
     partial_sums = []
@@ -105,3 +104,10 @@ def M(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p):
 
 #----------------- Probability Density Function -----------------#
 
+def PDF(x,N,L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p):
+    L = L_func(L_params)
+    M_val = M(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p)
+    pdf = np.sum([M_val/(np.pi*L)*infinite_weighted_sum_RV(n*np.pi/L,S,c_s_func,c_s_params,cf_params,cf)*
+           np.cos(n*np.pi*x/L) for n in range(1,N+1)])
+    pdf += 1/(2*L)
+    return pdf
