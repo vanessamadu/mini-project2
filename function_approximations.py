@@ -80,7 +80,7 @@ def partial_sum_remainder(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k):
                                    cf_params,cf,k) - partial_alternating_sum(L_func,L_params,S,c_s_func,
                                                                              c_s_params,cf_params,cf,k-1)
 
-def M(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p):
+def approx_alternating_series(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p):
 
     k = 1
     remainders = []
@@ -98,6 +98,10 @@ def M(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p):
                                    cf_params,cf,k))
         k +=1
     return k, remainders, partial_sums, partial_sum_remainder(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k)
+
+def M(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p):
+    val = approx_alternating_series(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p)[3]
+    return np.pi/(2*val)
 
 #----------------- Probability Density Function -----------------#
 
