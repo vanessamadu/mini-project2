@@ -5,10 +5,10 @@ from numerical_M import *
 def PDF(charfunc,cf_params,tol,p,x,N):
     L = cf_params[-1] #always put L last
     M_val = M(cf_params[:-1],tol,p,charfunc)[1]
-    pdf = (1/2 + (M_val/np.pi)*np.sum([charfunc(n*np.pi/L,cf_params[:-1])*np.cos(n*np.pi*x/L) for n in range(1,N+1)]))/L 
+    pdf = (1/2 + (M_val/np.pi)*np.sum([np.real_if_close(charfunc(n*np.pi/L,cf_params[:-1]))*np.cos(n*np.pi*x/L) for n in range(1,N+1)]))/L 
     return pdf
 #------------------------ plotting --------------------------#
-toggle = 1
+toggle = 0
 if toggle == 0:
     B = 0.5
     S = 50
@@ -26,8 +26,8 @@ if toggle == 0:
     plt.show()
 elif toggle == 1:
     # parameter values
-    phi = 0.2
-    B = 5
+    phi = 0.9
+    B = 1
     alpha = 0.5
     # maximum values
     S = 40
@@ -46,5 +46,5 @@ elif toggle == 1:
     #uniform_vals = [PDF(uniform_char_func,uniform_params,tol,p,x,N) for x in X]
     beta_vals = [PDF(gen_beta_char_func,beta_params,tol,p,x,N) for x in X]
     plt.plot(X,beta_vals)
-    plt.ylim(bottom=0)
+    #plt.ylim(bottom=0)
     plt.show()
