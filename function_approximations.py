@@ -40,7 +40,8 @@ def infinite_weighted_sum_RV(t,S,c_s_func,c_s_params,cf_params,cf):
     S:              upper limit of product approximation. integer > 0
     c_s_func:       defines coefficients as a function of s, real function
     c_s_params:     real number(s)
-    cf_params:      real numbers > 0     
+    cf_params:      real numbers > 0  
+    cf:             characteristic function of the RV being summed
     '''
     return np.prod([cf(c_s_func(s,c_s_params)*t,cf_params) for s in range(S)])
 
@@ -53,4 +54,26 @@ def c_s_geom(theta,s):
 def L_geom(theta):
     # -1 < theta < 1
     return 1/(1-np.abs(theta))
+#----------------- Evaluating M ----------------#
+def partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k):
+    '''
+    description:    finite approximation of alternating series denominator of M.
+
+    params:
+    L_func:         defines bounds of the infinite sum of random variables, real function
+    L_params:       real number(s)
+    S:              upper limit of product approximation. integer > 0
+    c_s_func:       defines coefficients as a function of s, real function
+    c_s_params:     real number(s)
+    cf_params:      real numbers > 0   
+    cf:             characteristic function of the RV being summed
+    k:              upper limit of sum approximation. integer > 0
+
+    '''
+    L = L_func(L_params)
+    return np.sum([(-1)**(n-1)*infinite_weighted_sum_RV(n*np.pi/L,S,c_s_func,c_s_params,cf_params,cf) 
+                   for n in range(1,k+1)])
+
+
+#----------------- Probability Density Function -----------------#
 
