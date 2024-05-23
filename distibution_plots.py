@@ -29,8 +29,8 @@ def gen_beta_char_func(t,params):
     '''
     B,alpha, S, coeff,coeff_param = params
     const = (2*B)**(2*alpha-1)
-    return np.prod([const*hyp1f1(alpha,2*alpha,2*B*np.j*t*coeff(coeff_param,s))
-                    *np.exp(np.j*B*t*coeff(coeff_param,s)) for s in range(S)])
+    return np.prod([const*hyp1f1(alpha,2*alpha,2*B*1j*t*coeff(coeff_param,s))
+                    *np.exp(1j*B*t*coeff(coeff_param,s)) for s in range(S)])
 
 def PDF(charfunc,cf_params,tol,p,x,N):
     L = cf_params[-1] #always put L last
@@ -42,16 +42,17 @@ toggle = 0
 if toggle == 0:
     B = 0.5
     S = 50
-    T = np.linspace(-1,1,1000)
-    alpha = 0.1
-    uniform_params = [B,S]
-    beta_params = [B,alpha,S]
+    T = np.linspace(-5,5,1000)
+    alpha = 2
+    coeff = geom_coeff
+    phi = 0.1
+    uniform_params = [B,S,coeff,phi]
+    beta_params = [B,alpha,S,coeff,phi]
 
     uniform_vals = [gen_uniform_char_func(t,uniform_params) for t in T]
     beta_vals = [np.real_if_close(gen_beta_char_func(t,beta_params)) for t in T]
     print(np.real_if_close(gen_beta_char_func(0,beta_params)))
-    plt.plot(T,beta_vals)
-    plt.ylim(bottom=0)
+    plt.plot(T,uniform_vals)
     plt.show()
 elif toggle == 1:
     # parameter values
