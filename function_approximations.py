@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.special import hyp1f1
+from abc import ABC,abstractmethod
 
 #--------------- STANDARD SINGLE RV CHARACTERISTIC FUNCTIONS --------------#
 def beta_char_func(t,beta_params):
@@ -30,22 +31,26 @@ def uniform_char_func(t,uniform_params):
 
 #-------------------- INFINITE WEIGHTED SUM CHARACTERISTIC FUNCTIONS ----------------#
 
-def infinite_weighted_sum_beta(t,S,c_s_func,c_s_params,beta_params):
+def infinite_weighted_sum_RV(t,S,c_s_func,c_s_params,cf_params,cf):
     '''
     description:    finite approximation of the characteristic function of the infinite 
-                    weighted sum of symmetric beta distributed random variables on the 
-                    interval [-B,B] with parameter alpha
+                    weighted sum of IID random variables
     params:
     t:              real number > 0
     S:              upper limit of product approximation. integer > 0
     c_s_func:       defines coefficients as a function of s, real function
     c_s_params:     real number(s)
-
-    beta_params:    [alpha,B], real numbers > 0     
+    cf_params:      real numbers > 0     
     '''
-    return np.prod([beta_char_func(c_s_func(s,c_s_params)*t,beta_params) for s in range(S)])
+    return np.prod([cf(c_s_func(s,c_s_params)*t,cf_params) for s in range(S)])
 
-'''
-    L_func:         defines bound of infinite weighted sum, real function
-    L_params:       real number(s)
-'''
+#------------------- WEIGHTING SCHEMES ------------------#
+# geometric
+
+def c_s_geom(theta,s):
+    # -1 < theta < 1
+    return theta**s
+def L_geom(theta):
+    # -1 < theta < 1
+    return 1/(1-np.abs(theta))
+
