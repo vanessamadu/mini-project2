@@ -1,5 +1,34 @@
 import numpy as np
-from scipy.special import gamma,iv
+from distibution_plots import *
+from scipy.special import hyp1f1
+
+def gen_uniform_char_func(t,params):
+    '''
+    description:    finite approximation of the characteristic function of an infinite 
+                    sum of uniformly distributed random variables on the interval [-B,B].
+    params:     
+    B:              real number > 0
+    S:              integer > 0 (upper value for infinite product estimation)
+    t:              real number = pi/L > 0
+    returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
+    '''
+    B,S, coeff,coeff_param = params
+    return np.prod([np.sinc(B*t*coeff(coeff_param,s)) for s in range(S)])
+
+def gen_beta_char_func(t,params):
+    '''
+    description:    finite approximation of the characteristic function of an infinite
+                    sum of symmetric beta distributed random variables on the interval [-1/2,1/2].
+    params:     
+    alpha:          real number > 0
+    S:              integer > 0 (upper value for infinite product estimation)
+    t:              real number = pi/L > 0
+    returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
+    '''
+    B,alpha, S, coeff,coeff_param = params
+    const = (2*B)**(2*alpha-1)
+    return np.prod([const*hyp1f1(alpha,2*alpha,2*B*1j*t*coeff(coeff_param,s))
+                    *np.exp(1j*B*t*coeff(coeff_param,s)) for s in range(S)])
 
 def uniform_char_func(n,params):
     '''
@@ -27,8 +56,7 @@ def beta_char_func(n,params):
     returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
     '''
     B,alpha, S, coeff,coeff_param,L = params
-    const = (2*B)**(2*alpha-1)*gamma(alpha+0.5)
-    return np.prod([const*iv(alpha-0.5,1j*coeff(coeff_param,s)*B*n*np.pi/L)*(1j*coeff(coeff_param,s)*n*B*np.pi/L/2)**(0.5-alpha) for s in range(S)])
+    return gen_beta_char_func(n*np.pi/L,params[:-1])
 
 def partial_alternating_sum(k,params,f):
     '''
