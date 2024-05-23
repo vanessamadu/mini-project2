@@ -31,7 +31,7 @@ def uniform_char_func(t,uniform_params):
 
 #-------------------- INFINITE WEIGHTED SUM CHARACTERISTIC FUNCTIONS ----------------#
 
-def infinite_weighted_sum_RV(t,S,c_s_func,c_s_params,cf_params,cf):
+def infinite_weighted_sum_RV_char_func(t,S,c_s_func,c_s_params,cf_params,cf):
     '''
     description:    finite approximation of the characteristic function of the infinite 
                     weighted sum of IID random variables
@@ -43,7 +43,7 @@ def infinite_weighted_sum_RV(t,S,c_s_func,c_s_params,cf_params,cf):
     cf_params:      real numbers > 0  
     cf:             characteristic function of the RV being summed
     '''
-    return np.prod([cf(c_s_func(s,c_s_params)*t,cf_params) for s in range(S)])
+    return np.prod([cf(c_s_func(c_s_params,s)*t,cf_params) for s in range(S)])
 
 #------------------- WEIGHTING SCHEMES ------------------#
 # geometric
@@ -51,9 +51,11 @@ def infinite_weighted_sum_RV(t,S,c_s_func,c_s_params,cf_params,cf):
 def c_s_geom(theta,s):
     # -1 < theta < 1
     return theta**s
-def L_geom(theta):
+def L_geom(params):
     # -1 < theta < 1
-    return 1/(1-np.abs(theta))
+    #unpack 
+    B,theta = params
+    return B/(1-np.abs(theta))
 #----------------- Evaluating M ----------------#
 def partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k):
     '''
@@ -71,7 +73,7 @@ def partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k
 
     '''
     L = L_func(L_params)
-    return np.sum([(-1)**(n-1)*infinite_weighted_sum_RV(n*np.pi/L,S,c_s_func,c_s_params,cf_params,cf) 
+    return np.sum([(-1)**(n-1)*infinite_weighted_sum_RV_char_func(n*np.pi/L,S,c_s_func,c_s_params,cf_params,cf) 
                    for n in range(1,k+1)])
 
 def partial_sum_remainder(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k):
@@ -96,18 +98,18 @@ def approx_alternating_series(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf
         partial_sums.append(partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,
                                    cf_params,cf,k))
         k +=1
-    return k, remainders, partial_sums, partial_sum_remainder(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k)
+    return k, remainders, partial_sums, partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k)
 
 def M(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p):
-    val = approx_alternating_series(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p)[3]
-    return np.pi/(2*val)
+    vals = approx_alternating_series(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p)
+    return np.pi/(2*vals[3])
 
 #----------------- Probability Density Function -----------------#
 
-def PDF(x,N,L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p):
+def PDF(x,M_val,N,L_func,L_params,S,c_s_func,c_s_params,cf_params,cf):
     L = L_func(L_params)
-    M_val = M(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p)
-    pdf = np.sum([M_val/(np.pi*L)*infinite_weighted_sum_RV(n*np.pi/L,S,c_s_func,c_s_params,cf_params,cf)*
+    pdf = np.sum([infinite_weighted_sum_RV_char_func(n*np.pi/L,S,c_s_func,c_s_params,cf_params,cf)*
            np.cos(n*np.pi*x/L) for n in range(1,N+1)])
+    pdf*= M_val/(np.pi*L)
     pdf += 1/(2*L)
     return pdf
