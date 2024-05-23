@@ -1,5 +1,4 @@
 import numpy as np
-from distibution_plots import *
 from scipy.special import hyp1f1
 
 def gen_uniform_char_func(t,params):
@@ -42,7 +41,7 @@ def uniform_char_func(n,params):
     returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
     '''
     B,S,coeff,coeff_param,L = params
-    return np.prod([np.sinc(coeff(coeff_param,s)*B*n/L) for s in range(S)])
+    return gen_uniform_char_func(n*np.pi/L,params[:-1])
 
 def beta_char_func(n,params):
     '''

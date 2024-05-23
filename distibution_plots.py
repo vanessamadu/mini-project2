@@ -4,7 +4,7 @@ from numerical_M import *
 
 def PDF(charfunc,cf_params,tol,p,x,N):
     L = cf_params[-1] #always put L last
-    M_val = M(cf_params,tol,p,charfunc)[1]
+    M_val = M(cf_params[:-1],tol,p,charfunc)[1]
     pdf = (1/2 + (M_val/np.pi)*np.sum([charfunc(n*np.pi/L,cf_params[:-1])*np.cos(n*np.pi*x/L) for n in range(1,N+1)]))/L 
     return pdf
 #------------------------ plotting --------------------------#
