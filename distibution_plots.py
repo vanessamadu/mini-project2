@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.special import gamma,iv
+from scipy.special import hyp1f1
 from numerical_M import *
 
 
@@ -14,8 +14,8 @@ def gen_uniform_char_func(t,params):
     t:              real number = pi/L > 0
     returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
     '''
-    B,S = params
-    return np.prod([np.sinc(B*t) for s in range(S)])
+    B,S, coeff,coeff_param = params
+    return np.prod([np.sinc(B*t*coeff(coeff_param,s)) for s in range(S)])
 
 def gen_beta_char_func(t,params):
     '''
@@ -27,9 +27,10 @@ def gen_beta_char_func(t,params):
     t:              real number = pi/L > 0
     returns:        real number (approximation of infinite product of sinc(n phi^s/L) wrt s)  
     '''
-    B,alpha, S = params
-    const = (2*B)**(2*alpha-1)*gamma(alpha+0.5)
-    return np.prod([const*iv(alpha-0.5,1j*t*B)*(1j*t*B/2)**(0.5-alpha) for s in range(S)])
+    B,alpha, S, coeff,coeff_param = params
+    const = (2*B)**(2*alpha-1)
+    return np.prod([const*hyp1f1(alpha,2*alpha,2*B*np.j*t*coeff(coeff_param,s))
+                    *np.exp(np.j*B*t*coeff(coeff_param,s)) for s in range(S)])
 
 def PDF(charfunc,cf_params,tol,p,x,N):
     L = cf_params[-1] #always put L last
