@@ -74,6 +74,30 @@ def partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k
     return np.sum([(-1)**(n-1)*infinite_weighted_sum_RV(n*np.pi/L,S,c_s_func,c_s_params,cf_params,cf) 
                    for n in range(1,k+1)])
 
+def partial_sum_remainder(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k):
+
+    return partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,
+                                   cf_params,cf,k) - partial_alternating_sum(L_func,L_params,S,c_s_func,
+                                                                             c_s_params,cf_params,cf,k-1)
+
+def M(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p):
+
+    k = 1
+    remainders = []
+    partial_sums = []
+    
+    # start up:
+    while k <= p:
+        remainders.append(partial_sum_remainder(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k))
+        partial_sums.append(partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,
+                                   cf_params,cf,k))
+        k+=1
+    while (np.abs(remainders[::-1][:p]) > tol).any():
+        remainders.append(partial_sum_remainder(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k))
+        partial_sums.append(partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,
+                                   cf_params,cf,k))
+        k +=1
+    return k, remainders, partial_sums, partial_sum_remainder(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k)
 
 #----------------- Probability Density Function -----------------#
 
