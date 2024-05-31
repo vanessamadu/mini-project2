@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.special import hyp1f1
 import scipy.integrate as integrate
-from scipy.optimize import fsolve
 
 #--------------- STANDARD SINGLE RV CHARACTERISTIC FUNCTIONS --------------#
 def beta_char_func(t,beta_params):
