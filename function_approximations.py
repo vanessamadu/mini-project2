@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.special import hyp1f1
 import scipy.integrate as integrate
+from scipy.optimize import fsolve
 
 #--------------- STANDARD SINGLE RV CHARACTERISTIC FUNCTIONS --------------#
 def beta_char_func(t,beta_params):
@@ -14,7 +15,7 @@ def beta_char_func(t,beta_params):
     # unpack
     alpha, B = beta_params
 
-    return np.real_if_close((2*B)**(2*alpha-1)*np.exp(-1j*B*t)*hyp1f1(alpha,2*alpha,2j*B*t))
+    return np.real_if_close((2*B)**(2*alpha-1)*np.exp(-1j*B*t)*hyp1f1(alpha,2*alpha,2j*B*t),tol=10E-10)
 
 def uniform_char_func(t,uniform_params):
     '''
@@ -57,7 +58,7 @@ def L_geom(params):
     B,theta = params
     return B/(1-np.abs(theta))
 #----------------- Evaluating M ----------------#
-def partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k):
+def partial_alternating_sum(L,S,c_s_func,c_s_params,cf_params,cf,k):
     '''
     description:    finite approximation of alternating series denominator of M.
 
@@ -72,50 +73,93 @@ def partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k
     k:              upper limit of sum approximation. integer > 0
 
     '''
-    L = L_func(L_params)
     return np.sum([(-1)**(n-1)*infinite_weighted_sum_RV_char_func(n*np.pi/L,S,c_s_func,c_s_params,cf_params,cf) 
                    for n in range(1,k+1)])
 
+def partial_sum(L,S,c_s_func,c_s_params,cf_params,cf,k):
+    '''
+    description:    finite approximation of alternating series denominator of M.
 
-def partial_sum_remainder(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k):
+    params:
+    L_func:         defines bounds of the infinite sum of random variables, real function
+    L_params:       real number(s)
+    S:              upper limit of product approximation. integer > 0
+    c_s_func:       defines coefficients as a function of s, real function
+    c_s_params:     real number(s)
+    cf_params:      real numbers > 0   
+    cf:             characteristic function of the RV being summed
+    k:              upper limit of sum approximation. integer > 0
 
-    return partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,
-                                   cf_params,cf,k) - partial_alternating_sum(L_func,L_params,S,c_s_func,
+    '''
+    return np.sum([infinite_weighted_sum_RV_char_func(n*np.pi/L,S,c_s_func,c_s_params,cf_params,cf) 
+                   for n in range(1,k+1)])
+
+def partial_sum_remainder(sum_func,L,S,c_s_func,c_s_params,cf_params,cf,k):
+
+    return sum_func(L,S,c_s_func,c_s_params,
+                                   cf_params,cf,k) - sum_func(L,S,c_s_func,
                                                                              c_s_params,cf_params,cf,k-1)
 
-def approx_alternating_series(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p):
+def approx_alternating_series(L,S,c_s_func,c_s_params,cf_params,cf,tol,p):
     k = 1
     remainders = []
     partial_sums = []
     
     # start up:
     while k <= p:
-        remainders.append(partial_sum_remainder(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k))
-        partial_sums.append(partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,
+        remainders.append(partial_sum_remainder(partial_alternating_sum,L,S,c_s_func,c_s_params,cf_params,cf,k))
+        partial_sums.append(partial_alternating_sum(L,S,c_s_func,c_s_params,
                                    cf_params,cf,k))
         k+=1
     while (np.abs(remainders[::-1][:p]) > tol).any():
-        remainders.append(partial_sum_remainder(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k))
-        partial_sums.append(partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,
+        remainders.append(partial_sum_remainder(partial_alternating_sum,L,S,c_s_func,c_s_params,cf_params,cf,k))
+        partial_sums.append(partial_alternating_sum(L,S,c_s_func,c_s_params,
                                    cf_params,cf,k))
         k +=1
-    return k, remainders, partial_sums, partial_alternating_sum(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,k)
+    return k, remainders, partial_sums, np.real_if_close(partial_alternating_sum(L,S,c_s_func,c_s_params,cf_params,cf,k),tol=10E-8)
 
-def M(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p):
-    vals =approx_alternating_series(L_func,L_params,S,c_s_func,c_s_params,cf_params,cf,tol,p)
-    return np.real_if_close(np.pi/(2*vals[3]))
+def approx_series(L,S,c_s_func,c_s_params,cf_params,cf,tol,p):
+    k = 1
+    remainders = []
+    partial_sums = []
+    
+    # start up:
+    while k <= p:
+        remainders.append(partial_sum_remainder(partial_sum,L,S,c_s_func,c_s_params,cf_params,cf,k))
+        partial_sums.append(partial_sum(L,S,c_s_func,c_s_params,
+                                   cf_params,cf,k))
+        k+=1
+    while (np.abs(remainders[::-1][:p]) > tol).any():
+        remainders.append(partial_sum_remainder(partial_sum,L,S,c_s_func,c_s_params,cf_params,cf,k))
+        partial_sums.append(partial_sum(L,S,c_s_func,c_s_params,
+                                   cf_params,cf,k))
+        k +=1
+    return k, remainders, partial_sums, np.real_if_close(partial_sum(L,S,c_s_func,c_s_params,cf_params,cf,k),tol=10E-8)
+
+def M(L,S,c_s_func,c_s_params,cf_params,cf,tol,p):
+    vals =approx_alternating_series(L,S,c_s_func,c_s_params,cf_params,cf,tol,p)
+    return np.real_if_close(np.pi/(2*vals[3]),tol=10E-8)
+
+#----------------- Threshold of L --------------#
+def L_threshold_eqn(L,S,c_s_func,c_s_params,cf_params,cf,tol,p):
+    return np.real_if_close(2*L - 1 - approx_series(L,S,c_s_func, c_s_params,cf_params,cf,tol,p)[3]/approx_alternating_series(L,S,c_s_func, c_s_params,cf_params,cf,tol,p)[3],tol=10E-8)
 
 #----------------- Probability Density Function -----------------#
 
 def PDF(x,M_val,N,L_func,L_params,S,c_s_func,c_s_params,cf_params,cf):
     L = L_func(L_params)
-    pdf = np.sum([infinite_weighted_sum_RV_char_func(n*np.pi/L,S,c_s_func,c_s_params,cf_params,cf)*
-           np.cos(n*np.pi*x/L) for n in range(1,N+1)])
-    pdf*= M_val/(np.pi*L)
-    pdf += 1/(2*L)
-    return pdf
+    if np.abs(x)<=L:
+        pdf = np.sum([infinite_weighted_sum_RV_char_func(n*np.pi/L,S,c_s_func,c_s_params,cf_params,cf)*
+            np.cos(n*np.pi*x/L) for n in range(1,N+1)])
+        pdf*= M_val/(np.pi*L)
+        pdf += 1/(2*L)
+        return np.real_if_close(pdf,tol=10E-8)
+    else:
+        return 0.0
+        
+    
 
 def check_integral(M_val,N,L_func,L_params,S,c_s_func,c_s_params,cf_params,cf):
     L = L_func(L_params)
-    result = integrate.quad(lambda x: PDF(x,M_val,N,L_func,L_params,S,c_s_func,c_s_params,cf_params,cf),-L,L)
+    result = integrate.quad(lambda x: np.real_if_close(PDF(x,M_val,N,L_func,L_params,S,c_s_func,c_s_params,cf_params,cf),tol=10E-8),-L,L)
     return result
